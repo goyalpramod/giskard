@@ -1,6 +1,5 @@
 import {defineStore} from 'pinia';
-import { ManagedUserVM} from '@/generated-sources';
-import { AdminUserDTO, UpdateMeDTO } from '@/generated/client';
+import { AdminUserDTO, UpdateMeDTO, ManagedUserVM } from '@/generated/client';
 import {Role} from '@/enums';
 import {api} from '@/api';
 import {getLocalToken, removeLocalToken, saveLocalToken} from '@/utils';
@@ -156,7 +155,7 @@ export const useUserStore = defineStore('user', {
       const loadingNotification = { content: 'saving', showProgress: true };
       try {
         mainStore.addNotification(loadingNotification);
-        await api.signupUser(payload.userData);
+        await openapi.account.registerAccount({ managedUserVM: payload.userData });
         mainStore.removeNotification(loadingNotification);
         mainStore.addNotification({ content: 'Success! Please proceed to login', color: TYPE.SUCCESS });
         await this.logout();
