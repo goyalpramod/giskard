@@ -1,7 +1,6 @@
 import {defineStore} from 'pinia';
 import { AdminUserDTO, UpdateMeDTO, ManagedUserVM } from '@/generated/client';
 import {Role} from '@/enums';
-import {api} from '@/api';
 import {getLocalToken, removeLocalToken, saveLocalToken} from '@/utils';
 import {useMainStore} from '@/stores/main';
 import {TYPE} from 'vue-toastification';
@@ -120,12 +119,12 @@ export const useUserStore = defineStore('user', {
         await router.push('/main');
       }
     },
-    async passwordRecovery(payload: { userId: string }) {
+    async passwordRecovery(payload: { email: string }) {
       const mainStore = useMainStore();
       const loadingNotification = { content: 'Sending password recovery email', showProgress: true };
       try {
         mainStore.addNotification(loadingNotification);
-        await api.passwordRecovery(payload.userId);
+        await openapi.account.requestPasswordReset({ passwordResetRequest: { email: payload.email } });
         mainStore.removeNotification(loadingNotification);
         mainStore.addNotification({ color: TYPE.SUCCESS, content: 'Password recovery link has been sent' });
         await this.logout();
@@ -145,7 +144,7 @@ export const useUserStore = defineStore('user', {
       const mainStore = useMainStore();
       const loadingNotification = { content: 'Resetting password', showProgress: true };
       mainStore.addNotification(loadingNotification);
-      await api.resetPassword(payload.password);
+      await openapi.account.finishPasswordReset({ tokenAndPasswordVM: { token: payload.token, newPassword: payload.password } });
       mainStore.removeNotification(loadingNotification);
       mainStore.addNotification({ color: TYPE.SUCCESS, content: 'Password successfully changed' });
       await this.logout();
