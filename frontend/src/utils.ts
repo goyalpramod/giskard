@@ -65,7 +65,8 @@ export function anonymize(obj: any) {
 
 export function isAdmin(store) {
   const userStore = useUserStore();
-  return userStore.userProfile?.roles!.includes(Role.ADMIN);
+  const rolesArray = userStore.userProfile?.roles ? Array.from(userStore.userProfile.roles) : [];
+  return rolesArray.includes(Role.ADMIN);
 }
 
 function stringHash(str: string) {

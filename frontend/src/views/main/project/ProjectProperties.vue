@@ -138,14 +138,14 @@ async function cancelUserInvitation(user: IUserProfileMinimal) {
     component: ConfirmModal,
     bind: {
       title: 'Cancel user invitation',
-      text: `Are you sure you want to cancel invitation of user <strong>${user.user_id}</strong>?`,
+      text: `Are you sure you want to cancel invitation of user <strong>${user.userId}</strong>?`,
     },
     on: {
       async confirm(close) {
         if (project) {
           try {
-            mixpanel.track('Cancel user invitation to project', { projectId: project.id, userId: user.id });
-            await useProjectStore().uninviteUserFromProject({ projectId: project.id, userId: user.id })
+            mixpanel.track('Cancel user invitation to project', { projectId: project.value!.id, userId: user.id });
+            await useProjectStore().uninviteUserFromProject({ projectId: project.value!.id, userId: user.id })
             close();
           } catch (e) {
             console.error(e)
@@ -158,7 +158,7 @@ async function cancelUserInvitation(user: IUserProfileMinimal) {
 
 function exportProject(id: number) {
   mixpanel.track('Export project', { id });
-  projectStore.exportProject(id).catch( err =>
+  projectStore.exportProject(id).catch(err =>
     useMainStore().addSimpleNotification('Failed to export project')
   );
 }

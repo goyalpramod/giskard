@@ -149,7 +149,8 @@ const project = computed(() => {
 });
 
 const isProjectOwnerOrAdmin = computed(() => {
-  return isUserProjectOwner.value || userProfile.value?.roles?.includes(Role.ADMIN)
+  const rolesArray = userProfile.value?.roles ? Array.from(userProfile.value?.roles) : [];
+  return isUserProjectOwner.value || rolesArray.includes(Role.ADMIN)
 });
 
 const isUserProjectOwner = computed(() => {

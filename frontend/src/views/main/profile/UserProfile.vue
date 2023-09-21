@@ -17,7 +17,7 @@
                     <v-col cols=6>
                       <div>
                         <div class="caption secondary--text text--lighten-3">User ID</div>
-                        <div class="subtitle-1">{{ userProfile.user_id }}</div>
+                        <div class="subtitle-1">{{ userProfile.userId }}</div>
                       </div>
                       <div class="mt-3">
                         <div class="caption secondary--text text--lighten-3">Display Name</div>
@@ -26,9 +26,8 @@
                           <div class="subtitle-1" v-else>(not set)</div>
                         </div>
                         <div v-else>
-                          <ValidationProvider name="Display name" mode="eager" rules="min:4" v-slot="{errors}">
-                            <v-text-field v-model="displayName" single-line :error-messages="errors"
-                                          class="my-0 py-0"></v-text-field>
+                          <ValidationProvider name="Display name" mode="eager" rules="min:4" v-slot="{ errors }">
+                            <v-text-field v-model="displayName" single-line :error-messages="errors" class="my-0 py-0"></v-text-field>
                           </ValidationProvider>
                         </div>
                       </div>
@@ -42,9 +41,8 @@
                         <div class="caption secondary--text text--lighten-3">Email</div>
                         <div v-if="!editModeToggle" class="subtitle-1">{{ userProfile.email }}</div>
                         <div v-else>
-                          <ValidationProvider name="Email" mode="eager" rules="required|email" v-slot="{errors}">
-                            <v-text-field type="email" v-model="email" single-line hide :error-messages="errors"
-                                          class="my-0 py-0"></v-text-field>
+                          <ValidationProvider name="Email" mode="eager" rules="required|email" v-slot="{ errors }">
+                            <v-text-field type="email" v-model="email" single-line hide :error-messages="errors" class="my-0 py-0"></v-text-field>
                           </ValidationProvider>
                         </div>
                       </div>
@@ -56,13 +54,9 @@
                   <v-spacer></v-spacer>
                   <v-btn tile small class="primary" v-show="!editModeToggle" @click="editModeToggle = true">Edit
                   </v-btn>
-                  <v-btn tile small class="secondary" v-show="editModeToggle"
-                         @click="editModeToggle = false; resetFormData();">Cancel
+                  <v-btn tile small class="secondary" v-show="editModeToggle" @click="editModeToggle = false; resetFormData();">Cancel
                   </v-btn>
-                  <ButtonModalConfirmation
-                      v-if="editModeToggle"
-                      :disabledButton="invalid || pristine"
-                      @ok="submit">
+                  <ButtonModalConfirmation v-if="editModeToggle" :disabledButton="invalid || pristine" @ok="submit">
                   </ButtonModalConfirmation>
                 </v-card-actions>
               </v-form>
@@ -70,7 +64,7 @@
           </v-card>
         </v-col>
         <v-col>
-          <ApiTokenCard/>
+          <ApiTokenCard />
         </v-col>
       </v-row>
       <v-row>
@@ -80,7 +74,7 @@
       </v-row>
       <v-row v-if="isAdmin">
         <v-col>
-          <RunningWorkerJobs/>
+          <RunningWorkerJobs />
         </v-col>
       </v-row>
     </v-container>
@@ -88,18 +82,16 @@
 </template>
 
 <script setup lang="ts">
-import {computed, ref} from "vue";
-import {UpdateMeDTO} from "@/generated-sources";
-import {Role} from "@/enums";
+import { computed, ref } from "vue";
+import { UpdateMeDTO } from "@/generated/client";
+import { Role } from "@/enums";
 import ApiTokenCard from "@/components/ApiTokenCard.vue";
 import ClientInstructionCard from "@/components/ClientInstructionCard.vue";
 import RunningWorkerJobs from '@/views/main/profile/RunningWorkerJobs.vue';
 
-import {useUserStore} from "@/stores/user";
-import {useMainStore} from "@/stores/main";
+import { useUserStore } from "@/stores/user";
 
 const userStore = useUserStore();
-const mainStore = useMainStore();
 
 const displayName = ref<string>("");
 const email = ref<string>("");
@@ -114,8 +106,9 @@ function resetFormData() {
     if (userProfile.displayName) {
       displayName.value = userProfile.displayName;
     }
-    email.value = userProfile.email;
-    isAdmin.value = userProfile.roles!.includes(Role.ADMIN);
+    email.value = userProfile.email ?? "";
+    const rolesArray = userProfile.roles ? Array.from(userProfile.roles) : [];
+    isAdmin.value = rolesArray.includes(Role.ADMIN);
   }
 }
 

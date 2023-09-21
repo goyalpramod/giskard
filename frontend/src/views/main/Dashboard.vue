@@ -8,8 +8,8 @@
       <div class="my-2 text-h6 secondary--text font-weight-light">You have...</div>
       <v-row>
         <v-col sm=4 lg=3 v-if="isAdmin || isCreator">
-          <v-card dark tile color="success" :to="{path: '/main/projects', query: {f: 1}}">
-            <v-card-title class="text-h2">{{ projects.filter(p => p.owner.id === userProfile.id).length }}
+          <v-card dark tile color="success" :to="{ path: '/main/projects', query: { f: 1 } }">
+            <v-card-title class="text-h2">{{ projects.filter(p => p.owner.id === userProfile?.id).length }}
               <v-spacer></v-spacer>
               <v-icon style="font-size: 4rem">model_training</v-icon>
             </v-card-title>
@@ -17,8 +17,8 @@
           </v-card>
         </v-col>
         <v-col sm=4 lg=3>
-          <v-card dark tile color="secondary" :to="{path: '/main/projects', query: {f: 2}}">
-            <v-card-title class="text-h2">{{ projects.filter(p => p.owner.id !== userProfile.id).length }}
+          <v-card dark tile color="secondary" :to="{ path: '/main/projects', query: { f: 2 } }">
+            <v-card-title class="text-h2">{{ projects.filter(p => p.owner.id !== userProfile?.id).length }}
               <v-spacer></v-spacer>
               <v-icon style="font-size: 4rem">group_work</v-icon>
             </v-card-title>
@@ -40,13 +40,13 @@
 </template>
 
 <script setup lang="ts">
-import {computed, onMounted} from "vue";
-import {useProjectStore} from "@/stores/project";
-import {useUserStore} from "@/stores/user";
-import {useAdminStore} from "@/stores/admin";
-import {Role} from "@/enums";
-import {useMainStore} from "@/stores/main";
-import {useRouter} from "vue-router/composables";
+import { computed, onMounted } from "vue";
+import { useProjectStore } from "@/stores/project";
+import { useUserStore } from "@/stores/user";
+import { useAdminStore } from "@/stores/admin";
+import { Role } from "@/enums";
+import { useMainStore } from "@/stores/main";
+import { useRouter } from "vue-router/composables";
 
 const router = useRouter();
 const projectStore = useProjectStore();
@@ -76,7 +76,8 @@ const isAdmin = computed(() => {
 });
 
 const isCreator = computed(() => {
-  return userProfile.value?.roles?.includes(Role.AICREATOR)
+  const rolesArray = userProfile.value?.roles ? Array.from(userProfile.value?.roles) : [];
+  return rolesArray.includes(Role.AICREATOR)
 });
 
 const projects = computed(() => {
@@ -93,8 +94,8 @@ const greetedUser = computed(() => {
   if (userProfile.value) {
     if (userProfile.value?.displayName) {
       return userProfile.value?.displayName;
-    } else if (userProfile.value?.user_id) {
-      return userProfile.value?.user_id;
+    } else if (userProfile.value?.userId) {
+      return userProfile.value?.userId;
     } else {
       return userProfile.value?.email;
     }

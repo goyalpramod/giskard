@@ -69,7 +69,7 @@
             </v-col>
             <v-col cols=2>
               <span :class="{ 'font-weight-bold': p.owner.id === userProfile.id }">
-                {{ p.owner.user_id === userProfile.user_id ? "me" : (p.owner.displayName || p.owner.user_id) }}
+                {{ p.owner.user_id === userProfile.userId ? "me" : (p.owner.displayName || p.owner.user_id) }}
               </span>
             </v-col>
             <v-col cols=2>
@@ -239,7 +239,8 @@ const isAdmin = computed(() => {
 });
 
 const isCreator = computed(() => {
-  return userProfile.value.roles?.includes(Role.AICREATOR);
+  const rolesArray = userProfile.value?.roles ? Array.from(userProfile.value?.roles) : [];
+  return rolesArray.includes(Role.AICREATOR);
 });
 
 const projects = computed(() => {

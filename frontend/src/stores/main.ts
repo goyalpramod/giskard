@@ -1,14 +1,12 @@
 import {defineStore} from "pinia";
-import {IUserProfileMinimal} from "@/interfaces";
 import mixpanel from "mixpanel-browser";
 import {anonymize} from "@/utils";
 import Vue from "vue";
-import {api} from "@/api";
 import {AxiosError} from "axios";
 import {useUserStore} from "@/stores/user";
 import {TYPE} from "vue-toastification";
 import {openapi} from "@/api-v2";
-import {AppInfoDTO, LicenseDTO} from "@/generated/client";
+import {AppInfoDTO, LicenseDTO, UserDTO} from "@/generated/client";
 
 export interface AppNotification {
     content: string;
@@ -19,7 +17,7 @@ export interface AppNotification {
 interface State {
     appSettings?: AppInfoDTO;
     license: LicenseDTO | null;
-    coworkers: IUserProfileMinimal[];
+    coworkers: UserDTO[];
     notifications: AppNotification[];
     backendReady: boolean;
 }
@@ -48,7 +46,7 @@ export const useMainStore = defineStore('main', {
             }
             let instanceId = this.appSettings.generalSettings?.instanceId;
             if (userStore.userProfile) {
-                mixpanel.alias(`${instanceId}-${anonymize(userStore.userProfile?.user_id)}`);
+                mixpanel.alias(`${instanceId}-${anonymize(userStore.userProfile?.userId)}`);
             }
             mixpanel.people.set(
                 {
@@ -87,8 +85,8 @@ export const useMainStore = defineStore('main', {
             Vue.$toast.clear();
         },
         async fetchAppSettings() {
-            const response = await api.getUserAndAppSettings();
-            this.setAppSettings(response.app);
+            const response = await openapi.settings.getApplicationSettings();
+            if (response.app) this.setAppSettings(response.app);
         },
         async fetchLicense() {
             try {
@@ -101,15 +99,15 @@ export const useMainStore = defineStore('main', {
         },
         async getUserProfile() {
             const userStore = useUserStore();
-            const response = await api.getUserAndAppSettings();
+            const response = await openapi.settings.getApplicationSettings();
             if (response) {
-                userStore.userProfile = response.user;
+                if (response.user) userStore.userProfile = response.user;
                 this.appSettings = response.app;
             }
         },
         async getCoworkers() {
             try {
-                const response = await api.getCoworkersMinimal();
+                const response = await openapi.publicUser.getCoworkers();
                 if (response) {
                     this.coworkers = response;
                 }

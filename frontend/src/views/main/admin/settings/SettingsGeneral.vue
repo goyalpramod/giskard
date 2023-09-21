@@ -38,8 +38,8 @@
                   <tr>
                     <td>License expiration date</td>
                     <td v-if="mainStore.license && mainStore.license.expiresOn">{{
-                        mainStore.license?.expiresOn | date
-                      }}
+                      mainStore.license?.expiresOn | date
+                    }}
                     </td>
                   </tr>
                   <tr>
@@ -68,10 +68,8 @@
           <v-card height="100%">
             <v-card-title class="font-weight-light secondary--text">
               <span>Usage reporting</span>
-              <v-spacer/>
-              <v-switch
-                  v-model="appSettings.generalSettings.isAnalyticsEnabled"
-                  @change="saveGeneralSettings(appSettings.generalSettings)"></v-switch>
+              <v-spacer />
+              <v-switch v-model="appSettings.generalSettings.isAnalyticsEnabled" @change="saveGeneralSettings(appSettings.generalSettings)"></v-switch>
             </v-card-title>
             <v-card-text>
               <div class="mb-2">
@@ -194,13 +192,13 @@
     </v-dialog>
     <v-dialog v-model="unlockModal" width="500">
       <v-card>
-        <v-card-title v-if="isUnlocked" >Lock Giskard demo Gallery Space</v-card-title>
-        <v-card-title v-else >Unlock Giskard demo Gallery Space</v-card-title>
+        <v-card-title v-if="isUnlocked">Lock Giskard demo Gallery Space</v-card-title>
+        <v-card-title v-else>Unlock Giskard demo Gallery Space</v-card-title>
         <v-card-text>
-          <v-text-field outlined autofocus v-model="unlockToken" label="Token" type="password"/>
+          <v-text-field outlined autofocus v-model="unlockToken" label="Token" type="password" />
         </v-card-text>
         <v-card-actions>
-          <v-spacer/>
+          <v-spacer />
           <v-btn color="primary" text @click="switchGalleryUnlockStatus()">
             {{ isUnlocked ? "Lock" : "Unlock" }}
           </v-btn>
@@ -211,17 +209,19 @@
 </template>
 
 <script setup lang="ts">
-import {computed, onBeforeMount, ref, watch} from "vue";
+import { computed, onBeforeMount, ref, watch } from "vue";
 import mixpanel from "mixpanel-browser";
 import moment from "moment/moment";
-import {useMainStore} from "@/stores/main";
+import { useMainStore } from "@/stores/main";
 import ApiTokenCard from "@/components/ApiTokenCard.vue";
 import PlanUpgradeCard from "@/components/ee/PlanUpgradeCard.vue";
 import StartWorkerInstructions from "@/components/StartWorkerInstructions.vue";
 import CodeSnippet from "@/components/CodeSnippet.vue";
 import ClientInstructionCard from "@/components/ClientInstructionCard.vue";
-import {openapi} from "@/api-v2";
-import {GeneralSettings, MLWorkerInfoDTO} from "@/generated/client";
+import { openapi } from "@/api-v2";
+import { GeneralSettings, MLWorkerInfoDTO } from "@/generated/client";
+import { apiURL } from "@/env";
+
 
 const mainStore = useMainStore();
 
@@ -283,10 +283,10 @@ watch(() => [externalWorkerSelected.value, allMLWorkerSettings.value], () => {
   if (allMLWorkerSettings.value.length) {
     currentWorker.value = allMLWorkerSettings.value.find(value => value.isRemote === externalWorkerSelected.value) || undefined;
     installedPackagesData.value = (currentWorker.value !== undefined && currentWorker.value?.installedPackages) ?
-        Object.entries(currentWorker.value?.installedPackages).map(([key, value]) => ({
-          name: key,
-          version: value
-        })) : [];
+      Object.entries(currentWorker.value?.installedPackages).map(([key, value]) => ({
+        name: key,
+        version: value
+      })) : [];
   }
 }, { deep: true })
 
@@ -300,7 +300,7 @@ async function saveGeneralSettings(settings: GeneralSettings) {
   } else {
     mixpanel.opt_in_tracking();
   }
-  appSettings.value!.generalSettings = await openapi.settings.saveGeneralSettings({generalSettings: settings});
+  appSettings.value!.generalSettings = await openapi.settings.saveGeneralSettings({ generalSettings: settings });
 }
 
 async function initMLWorkerInfo() {
@@ -320,7 +320,7 @@ function epochToDate(epoch: number) {
 }
 
 async function stopMLWorker() {
-  await openapi.mlWorker.stopWorker({internal: !externalWorkerSelected.value});
+  await openapi.mlWorker.stopWorker({ internal: !externalWorkerSelected.value });
 }
 </script>
 

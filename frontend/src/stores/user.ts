@@ -1,5 +1,6 @@
 import {defineStore} from 'pinia';
-import {AdminUserDTO, ManagedUserVM, UpdateMeDTO} from '@/generated-sources';
+import { ManagedUserVM} from '@/generated-sources';
+import { AdminUserDTO, UpdateMeDTO } from '@/generated/client';
 import {Role} from '@/enums';
 import {api} from '@/api';
 import {getLocalToken, removeLocalToken, saveLocalToken} from '@/utils';
@@ -23,7 +24,8 @@ export const useUserStore = defineStore('user', {
   }),
   getters: {
     hasAdminAccess(state: State) {
-      return state.userProfile && state.userProfile.roles?.includes(Role.ADMIN) && state.userProfile.enabled;
+      const rolesArray = state.userProfile?.roles ? Array.from(state.userProfile.roles) : [];
+      return state.userProfile && rolesArray.includes(Role.ADMIN) && state.userProfile.enabled;
     },
   },
   actions: {
@@ -59,7 +61,7 @@ export const useUserStore = defineStore('user', {
       const loadingNotification = { content: 'saving', showProgress: true };
       try {
         mainStore.addNotification(loadingNotification);
-        this.userProfile = await api.updateMe(payload);
+        this.userProfile = await openapi.account.saveAccount({ updateMeDTO: payload });
         mainStore.removeNotification(loadingNotification);
         mainStore.addNotification({ content: 'Profile successfully updated', color: TYPE.SUCCESS });
       } catch (error) {
@@ -71,10 +73,13 @@ export const useUserStore = defineStore('user', {
       const mainStore = useMainStore();
 
       const fetchUserAndAppSettings = async () => {
-        const response = await api.getUserAndAppSettings();
+        const response = await openapi.settings.getApplicationSettings();
         this.isLoggedIn = true;
-        this.userProfile = response.user;
-        mainStore.setAppSettings(response.app);
+
+        if (response && response.user && response.app) {
+          this.userProfile = response.user;
+          mainStore.setAppSettings(response.app);
+        }
       };
 
       if (mainStore.authAvailable && !this.isLoggedIn) {

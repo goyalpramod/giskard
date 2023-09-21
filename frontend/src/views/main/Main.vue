@@ -135,7 +135,7 @@ import { computed, onMounted, onUnmounted, ref, watch } from 'vue';
 import { useRoute } from 'vue-router/composables';
 import moment from 'moment/moment';
 import { state, client } from '@/socket';
-import {openapi} from "@/api-v2";
+import { openapi } from "@/api-v2";
 
 const route = useRoute();
 const mainStore = useMainStore();
@@ -166,7 +166,7 @@ const authAvailable = computed(() => {
 const userId = computed(() => {
   const userProfile = userStore.userProfile;
   if (userProfile) {
-    return userProfile.user_id;
+    return userProfile.userId;
   } else {
     return "Guest";
   }
