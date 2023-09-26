@@ -50,9 +50,20 @@
                 </template>
                 <span>Coming soon</span>
               </v-tooltip>
-              <v-btn v-if="hasTest && hasInput && !hasJobInProgress" class="mx-1" color="primary" large outlined @click="openRunTestSuite(true)">
-                Compare
-              </v-btn>
+              <v-tooltip bottom :disabled="hasInput" class="small-tooltip">
+                <template v-slot:activator="{ on, attrs }">
+                  <div v-on="on">
+                    <v-btn v-if="hasTest && !hasJobInProgress" class="mx-1" color="primary" large outlined @click="openRunTestSuite(true)" :disabled="!hasInput">
+                      Compare
+                    </v-btn>
+                  </div>
+                </template>
+                <div>
+                  <p>To activate this feature, click on the "Edit Parameters" button of any test, and change the parameters of the objects (e.g. Model or Dataset) you want to compare to "Suite input".</p>
+                </div>
+
+
+              </v-tooltip>
               <v-btn v-if="hasTest" :loading="hasJobInProgress" class="mx-1" color="primary" large @click="handleRunTestSuite">
                 Run test suite
               </v-btn>
@@ -247,5 +258,9 @@ onActivated(() => loadData());
   align-items: flex-end;
   text-transform: uppercase;
   font-feature-settings: 'case' on, 'cpsp' on;
+}
+
+.v-tooltip {
+  max-width: 300px;
 }
 </style>
